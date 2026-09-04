@@ -1,0 +1,142 @@
+:root {
+  --color-bg-start: #120d0a;
+  --color-bg-end: #0a0706;
+  --color-surface: #1a1310;
+  --color-accent: #7a5540;
+  --color-accent-active: #63432f;
+  --color-text: #eee0cd;
+  --color-text-muted: #a8927a;
+  --color-border: #2c211a;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 16px;
+  min-height: 100vh;
+  /*
+    Le dégradé de base seul est trop "lisse" pour que le flou du verre givré
+    (backdrop-filter, plus bas) ait quoi que ce soit à diffuser. On ajoute
+    deux taches de couleur douces et diffuses derrière le contenu — leur flou
+    à travers les panneaux de verre est ce qui rend l'effet visible.
+    background-repeat + background-attachment évitent que tout ça se répète
+    en "tuiles" quand le contenu de la page est plus court que l'écran.
+  */
+  /*
+    Bords NETS (arrêt de couleur brutal, pas de fondu) plutôt que des taches
+    diffuses : un flou appliqué à quelque chose de déjà flou ne se voit
+    presque pas. Le contraste net/flou est ce qui rend le verre givré visible.
+    Mélange de tailles (grandes/petites) et de teintes, toutes dans la même
+    famille brun/tabac/crème.
+  */
+  background:
+    radial-gradient(circle at 8% 15%, rgba(122, 85, 64, 0.45) 0%, rgba(122, 85, 64, 0.45) 22%, transparent 23%),
+    radial-gradient(circle at 78% 10%, rgba(168, 146, 122, 0.3) 0%, rgba(168, 146, 122, 0.3) 6%, transparent 7%),
+    radial-gradient(circle at 55% 45%, rgba(74, 53, 36, 0.4) 0%, rgba(74, 53, 36, 0.4) 14%, transparent 15%),
+    radial-gradient(circle at 20% 78%, rgba(122, 85, 64, 0.3) 0%, rgba(122, 85, 64, 0.3) 8%, transparent 9%),
+    radial-gradient(circle at 90% 85%, rgba(168, 146, 122, 0.25) 0%, rgba(168, 146, 122, 0.25) 5%, transparent 6%),
+    radial-gradient(circle at 40% 15%, rgba(44, 33, 26, 0.5) 0%, rgba(44, 33, 26, 0.5) 18%, transparent 19%),
+    radial-gradient(circle at 85% 55%, rgba(201, 160, 108, 0.35) 0%, rgba(201, 160, 108, 0.35) 10%, transparent 11%),
+    radial-gradient(circle at 10% 50%, rgba(238, 224, 205, 0.12) 0%, rgba(238, 224, 205, 0.12) 6%, transparent 7%),
+    linear-gradient(160deg, var(--color-bg-start), var(--color-bg-end));
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  color: var(--color-text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+}
+
+h1 {
+  font-size: 1.4rem;
+  margin: 0 0 16px;
+}
+
+/*
+  Effet "feuille de verre" : un léger reflet diagonal en haut à gauche
+  (via le dégradé) + une ombre douce pour le volume, sans coins arrondis
+  ni flou. Utilisé sur le bouton et le tableau, chacun sur sa propre
+  couleur de base (accent pour le bouton, surface pour le tableau).
+*/
+#log-button,
+table {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 6px 16px rgba(0, 0, 0, 0.45);
+  border-radius: 0;
+}
+
+#log-button {
+  display: block;
+  width: 100%;
+  padding: 24px;
+  margin-bottom: 20px;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--color-text);
+  background:
+    linear-gradient(160deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0) 55%),
+    var(--color-accent);
+  border: 1px solid var(--color-border);
+  /* Halo néon léger : un flou proche + un plus large, sans décalage, dans une teinte plus vive que l'accent */
+  box-shadow:
+    0 0 10px rgba(201, 138, 85, 0.45),
+    0 0 24px rgba(201, 138, 85, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 6px 16px rgba(0, 0, 0, 0.45);
+}
+
+#log-button:active {
+  background: var(--color-accent-active);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+/*
+  Effet "verre givré" : fond semi-transparent + backdrop-filter, qui floute
+  ce qu'il y a DERRIÈRE le tableau (le dégradé de la page). C'est ce flou,
+  et non la couleur elle-même, qui donne l'aspect dépoli.
+  Préfixe -webkit- nécessaire pour Safari (iOS notamment).
+*/
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  /*
+    Teinte SOMBRE plutôt que blanche : une vitre "fumée" plutôt que
+    "laiteuse". Ça laisse toujours voir/flouter les couleurs du fond
+    (saturate() les garde vives), mais assombrit assez l'ensemble pour que
+    le texte clair reste lisible, peu importe ce qui passe derrière.
+  */
+  background: rgba(8, 6, 5, 0.22);
+  -webkit-backdrop-filter: blur(12px) saturate(160%);
+  backdrop-filter: blur(12px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+th,
+td {
+  padding: 8px 10px;
+  text-align: left;
+}
+
+th {
+  color: var(--color-text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  /* Ombre sombre vers le haut (le creux) + reflet clair vers le bas (le bord qui capte la lumière) */
+  text-shadow:
+    0 -1px 1px rgba(0, 0, 0, 0.6),
+    0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+td {
+  color: var(--color-text-muted);
+  /* Filet de sécurité pour la lisibilité, le verre étant assez clair pour laisser passer des couleurs vives */
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}

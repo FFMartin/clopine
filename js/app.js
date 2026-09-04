@@ -13,12 +13,8 @@ function displayEntries(entries) {
   entries.forEach((entry) => {
     const row = document.createElement('tr');
     row.innerHTML = `
-      <td>${entry.id}</td>
       <td>${new Date(entry.timestamp).toLocaleString('fr-FR')}</td>
-      <td>${entry.locLatitude ?? '—'}</td>
-      <td>${entry.locLongitude ?? '—'}</td>
       <td>${entry.placeLabel ?? '—'}</td>
-      <td>${entry.synced ? 'Oui' : 'Non'}</td>
     `;
     tbody.appendChild(row);
   });
