@@ -1,6 +1,6 @@
 // js/db.js — wrapper léger IndexedDB (CRUD)
 
-const DB_NAME = 'tracker-db';
+const DB_NAME = 'clopine-db';
 const DB_VERSION = 1;
 
 let dbInstance = null;
@@ -19,15 +19,7 @@ function initDB() {
           keyPath: 'id',
           autoIncrement: true,
         });
-        entries.createIndex('ts', 'ts', { unique: false });
-        entries.createIndex('synced', 'synced', { unique: false });
-      }
-
-      if (!db.objectStoreNames.contains('places')) {
-        db.createObjectStore('places', {
-          keyPath: 'id',
-          autoIncrement: true,
-        });
+        entries.createIndex('timestamp', 'timestamp', { unique: false });
       }
     };
 
