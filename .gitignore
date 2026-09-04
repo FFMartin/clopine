@@ -1,0 +1,14 @@
+# Dépendances si vous vendorisez Chart.js plus tard
+node_modules/
+
+# Fichiers d'environnement (PAT Databricks, etc. — jamais commité)
+.env
+.env.local
+
+# Artefacts d'IDE
+.vscode/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
