@@ -7,9 +7,11 @@ let dbInstance = null;
 
 /**
  * @typedef {Object} Entry
+ * @property {string} id - identifiant unique généré côté client (UUID)
  * @property {number} timestamp - Horodatage du clic (epoch ms)
  * @property {number|null} locLatitude - Latitude au moment du clic
  * @property {number|null} locLongitude - Longitude au moment du clic
+ * @property {string|null} placeLabel - Nom de lieu lisible, ex. "Chinon (FR)"
  * @property {boolean} synced - Indique si l'entrée a été synchronisée (phase 2)
  */
 
@@ -23,10 +25,9 @@ function initDB() {
       const db = event.target.result;
 
       if (!db.objectStoreNames.contains('entries')) {
-        const entries = db.createObjectStore('entries', {
-          keyPath: 'id',
-          autoIncrement: true,
-        });
+        // Pas d'auto-increment : l'id (UUID) est généré côté client dans addEntry(),
+        // pour rester unique même sur plusieurs appareils (utile pour la synchro en Phase 2).
+        const entries = db.createObjectStore('entries', { keyPath: 'id' });
         entries.createIndex('timestamp', 'timestamp', { unique: false });
       }
     };
@@ -44,22 +45,26 @@ function initDB() {
 
 /**
  * @param {Pick<Entry, 'timestamp' | 'locLatitude' | 'locLongitude'>} entry
- * @returns {Promise<number>} l'id généré
+ * @returns {Promise<string>} l'id généré (UUID)
  */
 function addEntry(entry) {
+  const id = crypto.randomUUID();
+
   return initDB().then((db) => {
     return new Promise((resolve, reject) => {
       const tx = db.transaction('entries', 'readwrite');
       const store = tx.objectStore('entries');
 
       const request = store.add({
+        id,
         timestamp: entry.timestamp,
         locLatitude: entry.locLatitude ?? null,
         locLongitude: entry.locLongitude ?? null,
+        placeLabel: null,
         synced: false,
       });
 
-      request.onsuccess = () => resolve(request.result); // l'id généré
+      request.onsuccess = () => resolve(id);
       request.onerror = () => reject(request.error);
     });
   });
@@ -82,8 +87,8 @@ function getAllEntries() {
 }
 
 /**
- * @param {number} id
- * @param {Partial<Pick<Entry, 'locLatitude' | 'locLongitude'>>} patch
+ * @param {string} id
+ * @param {Partial<Pick<Entry, 'locLatitude' | 'locLongitude' | 'placeLabel'>>} patch
  * @returns {Promise<void>}
  */
 function updateEntry(id, patch) {
