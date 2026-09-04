@@ -8,12 +8,21 @@
 <body>
   <h1>Clopine</h1>
 
-  <script type="module">
-    import { initDB } from './js/db.js';
+  <button id="log-button" type="button">Log</button>
 
-    initDB()
-      .then((db) => console.log('DB ouverte avec succès :', db))
-      .catch((err) => console.error('Erreur ouverture DB :', err));
-  </script>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Horodatage</th>
+        <th>Latitude</th>
+        <th>Longitude</th>
+        <th>Synced</th>
+      </tr>
+    </thead>
+    <tbody id="entries-table-body"></tbody>
+  </table>
+
+  <script type="module" src="js/app.js"></script>
 </body>
 </html>

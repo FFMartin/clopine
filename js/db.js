@@ -5,6 +5,14 @@ const DB_VERSION = 1;
 
 let dbInstance = null;
 
+/**
+ * @typedef {Object} Entry
+ * @property {number} timestamp - Horodatage du clic (epoch ms)
+ * @property {number|null} locLatitude - Latitude au moment du clic
+ * @property {number|null} locLongitude - Longitude au moment du clic
+ * @property {boolean} synced - Indique si l'entrée a été synchronisée (phase 2)
+ */
+
 function initDB() {
   if (dbInstance) return Promise.resolve(dbInstance);
 
@@ -34,4 +42,43 @@ function initDB() {
   });
 }
 
-export { initDB };
+/**
+ * @param {Pick<Entry, 'timestamp' | 'locLatitude' | 'locLongitude'>} entry
+ * @returns {Promise<number>} l'id généré
+ */
+function addEntry(entry) {
+  return initDB().then((db) => {
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction('entries', 'readwrite');
+      const store = tx.objectStore('entries');
+
+      const request = store.add({
+        timestamp: entry.timestamp,
+        locLatitude: entry.locLatitude ?? null,
+        locLongitude: entry.locLongitude ?? null,
+        synced: false,
+      });
+
+      request.onsuccess = () => resolve(request.result); // l'id généré
+      request.onerror = () => reject(request.error);
+    });
+  });
+}
+
+/**
+ * @returns {Promise<Entry[]>}
+ */
+function getAllEntries() {
+  return initDB().then((db) => {
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction('entries', 'readonly');
+      const store = tx.objectStore('entries');
+      const request = store.getAll();
+
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+  });
+}
+
+export { initDB, addEntry, getAllEntries };
