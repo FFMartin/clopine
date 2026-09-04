@@ -81,4 +81,33 @@ function getAllEntries() {
   });
 }
 
-export { initDB, addEntry, getAllEntries };
+/**
+ * @param {number} id
+ * @param {Partial<Pick<Entry, 'locLatitude' | 'locLongitude'>>} patch
+ * @returns {Promise<void>}
+ */
+function updateEntry(id, patch) {
+  return initDB().then((db) => {
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction('entries', 'readwrite');
+      const store = tx.objectStore('entries');
+      const getRequest = store.get(id);
+
+      getRequest.onsuccess = () => {
+        const existing = getRequest.result;
+        if (!existing) {
+          reject(new Error(`Entrée ${id} introuvable`));
+          return;
+        }
+        const updated = { ...existing, ...patch };
+        store.put(updated);
+      };
+      getRequest.onerror = () => reject(getRequest.error);
+
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    });
+  });
+}
+
+export { initDB, addEntry, getAllEntries, updateEntry };

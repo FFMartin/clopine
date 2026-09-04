@@ -1,6 +1,7 @@
 // js/app.js — point d'entrée, orchestration UI
 
-import { addEntry, getAllEntries } from './db.js';
+import { addEntry, getAllEntries, updateEntry } from './db.js';
+import { getCurrentPosition } from './geoloc.js';
 
 const button = document.getElementById('log-button');
 
@@ -29,7 +30,16 @@ function refreshEntries() {
 
 button.addEventListener('click', () => {
   addEntry({ timestamp: Date.now() })
-    .then(() => refreshEntries())
+    .then((id) => {
+      refreshEntries(); // affichage immédiat, sans coords
+
+      getCurrentPosition()
+        .then(({ latitude, longitude }) =>
+          updateEntry(id, { locLatitude: latitude, locLongitude: longitude })
+        )
+        .then(() => refreshEntries()) // second rafraîchissement, une fois les coords connues
+        .catch((err) => console.warn(`Géoloc indisponible (code ${err.code}):`, err.message)); // dégradation silencieuse
+    })
     .catch((err) => console.error('Erreur:', err));
 });
 
