@@ -5,15 +5,7 @@ const DB_VERSION = 1;
 
 let dbInstance = null;
 
-/**
- * @typedef {Object} Entry
- * @property {string} id - identifiant unique généré côté client (UUID)
- * @property {number} timestamp - Horodatage du clic (epoch ms)
- * @property {number|null} locLatitude - Latitude au moment du clic
- * @property {number|null} locLongitude - Longitude au moment du clic
- * @property {string|null} placeLabel - Nom de lieu lisible, ex. "Chinon (FR)"
- * @property {boolean} synced - Indique si l'entrée a été synchronisée (phase 2)
- */
+/** @typedef {import('./types.js').Entry} Entry */
 
 function initDB() {
   if (dbInstance) return Promise.resolve(dbInstance);
