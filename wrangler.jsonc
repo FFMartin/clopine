@@ -1,0 +1,11 @@
+{
+  "name": "clopine",
+  "compatibility_date": "2026-09-01",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "clopine-db",
+      "database_id": "6a368cb2-d803-4edd-8444-9b90ffca90d5"
+    }
+  ]
+}
