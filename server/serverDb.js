@@ -9,4 +9,17 @@ async function getAllEntries(env) {
   return results;
 }
 
-export { getAllEntries };
+/**
+ * @param {*} env - environnement du Worker, porte le binding DB (D1)
+ * @param {{id: string, timestamp: number, locLatitude: number|null, locLongitude: number|null, placeLabel: string|null}} entry
+ * @returns {Promise<void>}
+ */
+async function addEntry(env, entry) {
+  await env.DB.prepare(
+    'INSERT INTO Entries (id, timestamp, loc_latitude, loc_longitude, place_label) VALUES (?, ?, ?, ?, ?)'
+  )
+    .bind(entry.id, entry.timestamp, entry.locLatitude ?? null, entry.locLongitude ?? null, entry.placeLabel ?? null)
+    .run();
+}
+
+export { getAllEntries, addEntry };
