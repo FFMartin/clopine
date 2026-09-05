@@ -2,7 +2,7 @@
 // Ne cache QUE nos propres fichiers : les appels à Nominatim (geocode.js) ou à la
 // géolocalisation ne sont jamais interceptés, ils doivent toujours viser le réseau.
 
-const CACHE_NAME = 'clopine-v1';
+const CACHE_NAME = 'clopine-v3';
 
 const ASSETS_TO_CACHE = [
   './',
