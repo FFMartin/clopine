@@ -1,6 +1,9 @@
 {
   "name": "clopine",
   "compatibility_date": "2026-09-01",
+  "assets": {
+    "directory": "./"
+  },
   "d1_databases": [
     {
       "binding": "DB",
