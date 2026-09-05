@@ -1,8 +1,10 @@
 {
   "name": "clopine",
   "compatibility_date": "2026-09-01",
+  "main": "server/index.js",
   "assets": {
-    "directory": "./"
+    "directory": "./client",
+    "binding": "ASSETS"
   },
   "d1_databases": [
     {
