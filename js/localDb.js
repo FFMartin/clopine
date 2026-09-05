@@ -1,4 +1,4 @@
-// js/db.js — wrapper léger IndexedDB (CRUD)
+// js/localDb.js — wrapper léger IndexedDB (CRUD)
 
 const DB_NAME = 'clopine-db';
 const DB_VERSION = 1;

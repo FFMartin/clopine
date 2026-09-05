@@ -1,6 +1,6 @@
 // js/app.js — point d'entrée, orchestration UI
 
-import { addEntry, getAllEntries, updateEntry } from './db.js';
+import { addEntry, getAllEntries, updateEntry } from './localDb.js';
 import { getCurrentPosition } from './geoloc.js';
 import { reverseGeocode } from './geocode.js';
 
