@@ -1,7 +1,16 @@
+import { getAllEntries } from './serverDb.js';
+
 export default {
   async fetch(request, env) {
-    // Pour l'instant : on ne fait que servir les fichiers statiques (client/).
-    // Les routes API (accès à D1) viendront s'ajouter ici dans une prochaine étape.
+    const url = new URL(request.url);
+
+    // Route "Lire clopine-db" : renvoie toutes les entrées en JSON.
+    if (url.pathname === '/api/entries' && request.method === 'GET') {
+      const entries = await getAllEntries(env);
+      return Response.json(entries);
+    }
+
+    // Pour tout le reste : on sert les fichiers statiques (client/).
     return env.ASSETS.fetch(request);
   },
 };
