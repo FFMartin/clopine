@@ -29,20 +29,35 @@ function refreshEntries() {
 }
 
 button.addEventListener('click', () => {
-  addEntry({ timestamp: Date.now() })
-    .then((id) => {
+  // L'Entry est construite ICI, complète, avant de partir vers localDb — ce
+  // n'est plus à localDb.js de décider ce qu'est une "nouvelle" entrée.
+  const now = Date.now();
+  /** @type {import('./types.js').Entry} */
+  const entry = {
+    id: crypto.randomUUID(),
+    timestamp: now,
+    locLatitude: null,
+    locLongitude: null,
+    placeLabel: null,
+    modifiedDate: now,
+    deletedDate: null,
+    syncedDate: null,
+  };
+
+  addEntry(entry)
+    .then(() => {
       refreshEntries(); // affichage immédiat, sans coords ni lieu
 
       getCurrentPosition()
         .then(({ latitude, longitude }) => {
-          return updateEntry(id, { locLatitude: latitude, locLongitude: longitude }).then(() => {
+          return updateEntry(entry.id, { locLatitude: latitude, locLongitude: longitude }).then(() => {
             refreshEntries(); // 2e rafraîchissement : coordonnées connues
 
             // Étape distincte, elle aussi non-bloquante : un échec du géocodage
             // (Nominatim indisponible, etc.) ne doit jamais remettre en cause
             // l'entrée déjà enregistrée avec ses coordonnées.
             reverseGeocode(latitude, longitude)
-              .then((placeLabel) => updateEntry(id, { placeLabel }))
+              .then((placeLabel) => updateEntry(entry.id, { placeLabel }))
               .then(() => refreshEntries()) // 3e rafraîchissement : lieu connu
               .catch((err) => console.warn('Géocodage indisponible:', err.message));
           });

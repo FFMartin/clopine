@@ -36,27 +36,19 @@ function initDB() {
 }
 
 /**
- * @param {Pick<Entry, 'timestamp' | 'locLatitude' | 'locLongitude'>} entry
- * @returns {Promise<string>} l'id généré (UUID)
+ * N'insère l'Entry QUE telle qu'on la lui donne — id, dates, tout doit déjà
+ * être décidé par l'appelant (app.js pour une création, sync.js pour un
+ * import). localDb.js n'a plus à savoir ce qu'est une "nouvelle" entrée.
+ * @param {Entry} entry - Entry complète
+ * @returns {Promise<void>}
  */
 function addEntry(entry) {
-  const id = crypto.randomUUID();
-
   return initDB().then((db) => {
     return new Promise((resolve, reject) => {
       const tx = db.transaction('entries', 'readwrite');
-      const store = tx.objectStore('entries');
+      const request = tx.objectStore('entries').add(entry);
 
-      const request = store.add({
-        id,
-        timestamp: entry.timestamp,
-        locLatitude: entry.locLatitude ?? null,
-        locLongitude: entry.locLongitude ?? null,
-        placeLabel: null,
-        synced: false,
-      });
-
-      request.onsuccess = () => resolve(id);
+      request.onsuccess = () => resolve();
       request.onerror = () => reject(request.error);
     });
   });
@@ -84,7 +76,7 @@ function getAllEntries() {
 
 /**
  * @param {string} id
- * @param {Partial<Pick<Entry, 'locLatitude' | 'locLongitude' | 'placeLabel'>>} patch
+ * @param {Partial<Pick<Entry, 'locLatitude' | 'locLongitude' | 'placeLabel' | 'deletedDate' | 'syncedDate' | 'modifiedDate'>>} patch
  * @returns {Promise<void>}
  */
 function updateEntry(id, patch) {
@@ -100,7 +92,14 @@ function updateEntry(id, patch) {
           reject(new Error(`Entrée ${id} introuvable`));
           return;
         }
-        const updated = { ...existing, ...patch };
+        // modifiedDate se timbre automatiquement à "maintenant" — sauf si le
+        // patch le précise explicitement (cas d'un import distant : on garde
+        // la date de modification d'origine, pas le moment de l'import).
+        const updated = {
+          ...existing,
+          ...patch,
+          modifiedDate: patch.modifiedDate ?? Date.now(),
+        };
         store.put(updated);
       };
       getRequest.onerror = () => reject(getRequest.error);

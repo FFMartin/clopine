@@ -9,7 +9,15 @@
  * @property {number|null} locLatitude - Latitude au moment du clic
  * @property {number|null} locLongitude - Longitude au moment du clic
  * @property {string|null} placeLabel - Nom de lieu lisible, ex. "Chinon (FR)"
- * @property {boolean} synced - Indique si l'entrée a été synchronisée (phase 2)
+ * @property {number} modifiedDate - Dernière modification du CONTENU (epoch ms).
+ *   Sert à arbitrer les conflits de synchro (dernière écriture gagne) — existe
+ *   à la fois en local et sur le serveur.
+ * @property {number|null} deletedDate - Date de suppression (epoch ms), ou null
+ *   si l'entrée est active. "Tombstone" : évite qu'une entrée supprimée sur un
+ *   appareil ne soit réimportée depuis un autre appareil/le serveur.
+ * @property {number|null} syncedDate - Dernière synchronisation réussie AVEC LE
+ *   SERVEUR (epoch ms), ou null si jamais poussée. Propre à chaque appareil —
+ *   n'existe QUE localement, jamais envoyée à clopine-db.
  */
 
 export {};
