@@ -51,3 +51,11 @@ button.addEventListener('click', () => {
 });
 
 refreshEntries();
+
+// Enregistrement du Service Worker : vérifie d'abord le support (comme pour la
+// géoloc), sans quoi l'appel planterait sur un navigateur trop ancien.
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker
+    .register('./service-worker.js')
+    .catch((err) => console.error('Erreur Service Worker:', err));
+}
