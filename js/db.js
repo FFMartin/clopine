@@ -77,8 +77,12 @@ function getAllEntries() {
   return initDB().then((db) => {
     return new Promise((resolve, reject) => {
       const tx = db.transaction('entries', 'readonly');
-      const store = tx.objectStore('entries');
-      const request = store.getAll();
+      // On passe par l'index "timestamp" plutôt que le store directement :
+      // depuis le passage à l'UUID, l'id n'a plus aucun rapport avec l'ordre
+      // chronologique. getAll() sur l'index trie par timestamp croissant —
+      // à l'appelant de réordonner si un affichage précis le demande.
+      const index = tx.objectStore('entries').index('timestamp');
+      const request = index.getAll();
 
       request.onsuccess = () => resolve(request.result);
       request.onerror = () => reject(request.error);

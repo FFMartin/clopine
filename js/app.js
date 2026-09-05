@@ -22,7 +22,9 @@ function displayEntries(entries) {
 
 function refreshEntries() {
   getAllEntries()
-    .then((entries) => displayEntries(entries))
+    // db.js rend les entrées triées par date croissante (ordre "naturel" via
+    // l'index) ; ce tableau précis veut les plus récentes en premier.
+    .then((entries) => displayEntries(entries.reverse()))
     .catch((err) => console.error('Erreur lecture:', err));
 }
 
