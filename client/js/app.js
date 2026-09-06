@@ -3,8 +3,10 @@
 import { addEntry, getAllEntries, updateEntry } from './localDb.js';
 import { getCurrentPosition } from './geoloc.js';
 import { reverseGeocode } from './geocode.js';
+import { sync } from './sync.js';
 
 const button = document.getElementById('log-button');
+const syncButton = document.getElementById('sync-button');
 
 function displayEntries(entries) {
   const tbody = document.getElementById('entries-table-body');
@@ -65,6 +67,12 @@ button.addEventListener('click', () => {
         .catch((err) => console.warn(`Géoloc indisponible (code ${err.code}):`, err.message)); // dégradation silencieuse
     })
     .catch((err) => console.error('Erreur:', err));
+});
+
+syncButton.addEventListener('click', () => {
+  sync()
+    .then(() => refreshEntries())
+    .catch((err) => console.error('Erreur synchro:', err));
 });
 
 refreshEntries();

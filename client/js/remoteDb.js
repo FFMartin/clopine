@@ -16,12 +16,16 @@ function getAllEntries() {
     .then((rows) =>
       // L'API renvoie les colonnes SQL telles quelles (snake_case) ; on les
       // convertit ici pour retrouver la même forme d'Entry que localDb.js.
+      // Pas de syncedDate ici : ce champ n'existe pas côté serveur (voir
+      // types.js), c'est à sync.js de le renseigner une fois l'entrée importée.
       rows.map((row) => ({
         id: row.id,
         timestamp: row.timestamp,
         locLatitude: row.loc_latitude,
         locLongitude: row.loc_longitude,
         placeLabel: row.place_label,
+        modifiedDate: row.modified_date,
+        deletedDate: row.deleted_date,
       }))
     );
 }

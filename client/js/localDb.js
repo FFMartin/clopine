@@ -39,6 +39,8 @@ function initDB() {
  * N'insère l'Entry QUE telle qu'on la lui donne — id, dates, tout doit déjà
  * être décidé par l'appelant (app.js pour une création, sync.js pour un
  * import). localDb.js n'a plus à savoir ce qu'est une "nouvelle" entrée.
+ * Utilise put() (pas add()) : insère si l'id est absent, écrase sinon — utile
+ * à sync.js pour importer une entrée distante plus récente sans état d'échec.
  * @param {Entry} entry - Entry complète
  * @returns {Promise<void>}
  */
@@ -46,7 +48,7 @@ function addEntry(entry) {
   return initDB().then((db) => {
     return new Promise((resolve, reject) => {
       const tx = db.transaction('entries', 'readwrite');
-      const request = tx.objectStore('entries').add(entry);
+      const request = tx.objectStore('entries').put(entry);
 
       request.onsuccess = () => resolve();
       request.onerror = () => reject(request.error);
