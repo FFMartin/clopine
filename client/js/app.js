@@ -1,4 +1,4 @@
-// js/app.js — point d'entrée, orchestration UI
+// client/js/app.js — point d'entrée, orchestration UI
 
 import { addEntry, getAllEntries, updateEntry } from './localDb.js';
 import { getCurrentPosition } from './geoloc.js';

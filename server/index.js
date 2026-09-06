@@ -1,3 +1,6 @@
+// server/index.js — point d'entrée du Worker : route les requêtes API, sert
+// les fichiers statiques (client/) pour tout le reste.
+
 import { getAllEntries, addEntry } from './serverDb.js';
 
 export default {

@@ -1,4 +1,4 @@
-// js/geocode.js — géocodage inversé (coordonnées → nom de lieu lisible)
+// client/js/geocode.js — géocodage inversé (coordonnées → nom de lieu lisible)
 // Utilise Nominatim (OpenStreetMap) : gratuit, sans clé API.
 
 const NOMINATIM_URL = 'https://nominatim.openstreetmap.org/reverse';

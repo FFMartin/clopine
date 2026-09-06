@@ -1,4 +1,4 @@
-// js/localDb.js — wrapper léger IndexedDB (CRUD)
+// client/js/localDb.js — wrapper léger IndexedDB (CRUD)
 
 const DB_NAME = 'clopine-db';
 const DB_VERSION = 1;
@@ -17,8 +17,9 @@ function initDB() {
       const db = event.target.result;
 
       if (!db.objectStoreNames.contains('entries')) {
-        // Pas d'auto-increment : l'id (UUID) est généré côté client dans addEntry(),
-        // pour rester unique même sur plusieurs appareils (utile pour la synchro en Phase 2).
+        // Pas d'auto-increment : l'id (UUID) est généré par l'appelant (app.js pour
+        // une création, sync.js pour un import) avant d'arriver ici, pour rester
+        // unique même sur plusieurs appareils — nécessaire pour la synchro.
         const entries = db.createObjectStore('entries', { keyPath: 'id' });
         entries.createIndex('timestamp', 'timestamp', { unique: false });
       }

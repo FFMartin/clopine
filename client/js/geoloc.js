@@ -1,4 +1,4 @@
-// js/geoloc.js — capture de la position géographique
+// client/js/geoloc.js — capture de la position géographique
 
 const GEOLOC_TIMEOUT_MS = 5000;
 
