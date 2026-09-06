@@ -18,18 +18,13 @@
 <body>
   <h1>Clopine</h1>
 
-  <button id="log-button" type="button">J'en grille une</button>
-  <button id="sync-button" type="button">Synchroniser</button>
+  <nav>
+    <a href="#/">Accueil</a>
+    <a href="#/entries">Entrées</a>
+    <a href="#/stats">Stats</a>
+  </nav>
 
-  <table>
-    <thead>
-      <tr>
-        <th>Horodatage</th>
-        <th>Lieu</th>
-      </tr>
-    </thead>
-    <tbody id="entries-table-body"></tbody>
-  </table>
+  <main id="view"></main>
 
   <script type="module" src="js/app.js"></script>
 </body>

@@ -1,12 +1,16 @@
 // service-worker.js — cache les fichiers statiques pour le fonctionnement hors ligne.
 
-const CACHE_NAME = 'clopine-v6';
+const CACHE_NAME = 'clopine-v8';
 
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './css/style.css',
   './js/app.js',
+  './js/views/home.js',
+  './js/views/entries.js',
+  './js/views/stats.js',
+  './js/views/entryTable.js',
   './js/localDb.js',
   './js/remoteDb.js',
   './js/sync.js',
