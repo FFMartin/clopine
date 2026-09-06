@@ -1,8 +1,6 @@
 // service-worker.js — cache les fichiers statiques pour le fonctionnement hors ligne.
-// Ne cache QUE nos propres fichiers : les appels à Nominatim (geocode.js) ou à la
-// géolocalisation ne sont jamais interceptés, ils doivent toujours viser le réseau.
 
-const CACHE_NAME = 'clopine-v5';
+const CACHE_NAME = 'clopine-v6';
 
 const ASSETS_TO_CACHE = [
   './',
@@ -20,26 +18,44 @@ const ASSETS_TO_CACHE = [
   './icons/icon-512.png',
 ];
 
-// À l'installation : on télécharge et on met en cache tous les fichiers de l'app.
+// skipWaiting : la nouvelle version s'active dès son installation, sans
+// attendre que tous les onglets/l'app installée soient fermés.
 self.addEventListener('install', (event) => {
+  self.skipWaiting();
   event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS_TO_CACHE)));
 });
 
-// À l'activation : on supprime les caches d'une ancienne version (utile le jour
-// où CACHE_NAME change, pour éviter d'accumuler des fichiers obsolètes).
+// clients.claim : prend le contrôle des pages déjà ouvertes immédiatement,
+// plutôt que d'attendre leur prochain rechargement.
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches
-      .keys()
-      .then((cacheNames) =>
-        Promise.all(cacheNames.filter((name) => name !== CACHE_NAME).map((name) => caches.delete(name)))
-      )
+    Promise.all([
+      self.clients.claim(),
+      caches
+        .keys()
+        .then((cacheNames) =>
+          Promise.all(cacheNames.filter((name) => name !== CACHE_NAME).map((name) => caches.delete(name)))
+        ),
+    ])
   );
 });
 
-// Stratégie cache-first : on sert depuis le cache si possible, sinon on va sur le réseau.
+// Stratégie network-first : toujours essayer le réseau en premier (donc
+// toujours la version fraîche quand on est en ligne), et ne retomber sur le
+// cache qu'en cas d'échec réseau (mode hors-ligne). L'inverse du cache-first
+// précédent, qui pouvait servir une version périmée même en étant en ligne.
 self.addEventListener('fetch', (event) => {
+  // Ne jamais intercepter les écritures (POST vers /api/entries) — toujours
+  // réseau, jamais de cache. La Cache API ne supporte de toute façon que GET.
+  if (event.request.method !== 'GET') return;
+
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => cachedResponse || fetch(event.request))
+    fetch(event.request)
+      .then((response) => {
+        const responseClone = response.clone();
+        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseClone));
+        return response;
+      })
+      .catch(() => caches.match(event.request))
   );
 });
