@@ -1,4 +1,4 @@
-// service-worker.js — cache les fichiers statiques pour le fonctionnement hors ligne.
+// client/service-worker.js — cache les fichiers statiques pour le fonctionnement hors ligne.
 
 const CACHE_NAME = 'clopine-v9';
 

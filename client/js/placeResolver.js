@@ -27,7 +27,11 @@ function identifyPlace(id, latitude, longitude) {
 function identifyMissingPlaces() {
   return getAllEntries().then((entries) => {
     const missing = entries.filter(
-      (entry) => entry.locLatitude !== null && entry.locLongitude !== null && entry.placeLabel === null
+      (entry) =>
+        entry.deletedDate === null &&
+        entry.locLatitude !== null &&
+        entry.locLongitude !== null &&
+        entry.placeLabel === null
     );
 
     // Séquentiel, pas en parallèle : Nominatim limite à 1 requête/seconde

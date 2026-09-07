@@ -3,6 +3,8 @@
 // reste la responsabilité de chaque vue qui l'utilise.
 
 /**
+ * Construit les cellules via textContent (pas innerHTML) pour placeLabel :
+ * cette valeur vient de Nominatim, une source externe qu'on ne contrôle pas.
  * @param {HTMLTableSectionElement} tbody
  * @param {import('../types.js').Entry[]} entries
  * @param {{ onDelete?: (id: string) => void }} [options] - onDelete absent : pas de
@@ -10,16 +12,27 @@
  */
 function renderEntryRows(tbody, entries, options = {}) {
   tbody.innerHTML = '';
+
   entries.forEach((entry) => {
     const row = document.createElement('tr');
-    row.innerHTML = `
-      <td>${new Date(entry.timestamp).toLocaleString('fr-FR')}</td>
-      <td>${entry.placeLabel ?? '—'}</td>
-      ${options.onDelete ? '<td><button type="button" class="delete-button">Supprimer</button></td>' : ''}
-    `;
+
+    const dateCell = document.createElement('td');
+    dateCell.textContent = new Date(entry.timestamp).toLocaleString('fr-FR');
+    row.appendChild(dateCell);
+
+    const placeCell = document.createElement('td');
+    placeCell.textContent = entry.placeLabel ?? '—';
+    row.appendChild(placeCell);
 
     if (options.onDelete) {
-      row.querySelector('.delete-button').addEventListener('click', () => options.onDelete(entry.id));
+      const actionCell = document.createElement('td');
+      const deleteButton = document.createElement('button');
+      deleteButton.type = 'button';
+      deleteButton.className = 'delete-button';
+      deleteButton.textContent = 'Supprimer';
+      deleteButton.addEventListener('click', () => options.onDelete(entry.id));
+      actionCell.appendChild(deleteButton);
+      row.appendChild(actionCell);
     }
 
     tbody.appendChild(row);
