@@ -2,7 +2,7 @@
 
 import { addEntry, getAllEntries, updateEntry } from '../localDb.js';
 import { getCurrentPosition } from '../geoloc.js';
-import { reverseGeocode } from '../geocode.js';
+import { identifyPlace } from '../placeResolver.js';
 import { renderEntryRows } from './entryTable.js';
 
 const ENTRIES_SHOWN = 10;
@@ -62,8 +62,7 @@ function renderHome(container) {
               // Étape distincte, elle aussi non-bloquante : un échec du géocodage
               // (Nominatim indisponible, etc.) ne doit jamais remettre en cause
               // l'entrée déjà enregistrée avec ses coordonnées.
-              reverseGeocode(latitude, longitude)
-                .then((placeLabel) => updateEntry(entry.id, { placeLabel }))
+              identifyPlace(entry.id, latitude, longitude)
                 .then(() => refreshList(tbody)) // 3e rafraîchissement : lieu connu
                 .catch((err) => console.warn('Géocodage indisponible:', err.message));
             });

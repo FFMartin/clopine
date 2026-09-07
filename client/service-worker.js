@@ -1,6 +1,6 @@
 // service-worker.js — cache les fichiers statiques pour le fonctionnement hors ligne.
 
-const CACHE_NAME = 'clopine-v8';
+const CACHE_NAME = 'clopine-v9';
 
 const ASSETS_TO_CACHE = [
   './',
@@ -14,6 +14,7 @@ const ASSETS_TO_CACHE = [
   './js/localDb.js',
   './js/remoteDb.js',
   './js/sync.js',
+  './js/placeResolver.js',
   './js/types.js',
   './js/geoloc.js',
   './js/geocode.js',

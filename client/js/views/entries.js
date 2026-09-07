@@ -2,6 +2,7 @@
 
 import { getAllEntries } from '../localDb.js';
 import { sync } from '../sync.js';
+import { identifyMissingPlaces } from '../placeResolver.js';
 import { renderEntryRows } from './entryTable.js';
 
 function refreshList(tbody) {
@@ -16,6 +17,7 @@ function refreshList(tbody) {
 function renderEntries(container) {
   container.innerHTML = `
     <button id="sync-button" type="button">Synchroniser</button>
+    <button id="identify-button" type="button">Identifier les lieux</button>
 
     <table>
       <thead>
@@ -29,12 +31,19 @@ function renderEntries(container) {
   `;
 
   const syncButton = container.querySelector('#sync-button');
+  const identifyButton = container.querySelector('#identify-button');
   const tbody = container.querySelector('#entries-table-body');
 
   syncButton.addEventListener('click', () => {
     sync()
       .then(() => refreshList(tbody))
       .catch((err) => console.error('Erreur synchro:', err));
+  });
+
+  identifyButton.addEventListener('click', () => {
+    identifyMissingPlaces()
+      .then(() => refreshList(tbody))
+      .catch((err) => console.error('Erreur identification:', err));
   });
 
   refreshList(tbody);
