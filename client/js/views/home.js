@@ -9,7 +9,10 @@ const ENTRIES_SHOWN = 10;
 
 function refreshList(tbody) {
   getAllEntries()
-    .then((entries) => renderEntryRows(tbody, entries.reverse().slice(0, ENTRIES_SHOWN)))
+    .then((entries) => {
+      const active = entries.filter((entry) => entry.deletedDate === null).reverse();
+      renderEntryRows(tbody, active.slice(0, ENTRIES_SHOWN));
+    })
     .catch((err) => console.error('Erreur lecture:', err));
 }
 

@@ -15,6 +15,11 @@ const routes = {
 function router() {
   const hash = location.hash || '#/';
   const render = routes[hash] ?? renderHome;
+
+  document.querySelectorAll('nav a').forEach((link) => {
+    link.classList.toggle('active', link.getAttribute('href') === hash);
+  });
+
   view.innerHTML = '';
   render(view);
 }
