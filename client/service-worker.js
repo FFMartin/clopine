@@ -1,6 +1,6 @@
 // client/service-worker.js — cache les fichiers statiques pour le fonctionnement hors ligne.
 
-const CACHE_NAME = 'clopine-v9';
+const CACHE_NAME = 'clopine-v10';
 
 const ASSETS_TO_CACHE = [
   './',
@@ -45,22 +45,44 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Stratégie network-first : toujours essayer le réseau en premier (donc
-// toujours la version fraîche quand on est en ligne), et ne retomber sur le
-// cache qu'en cas d'échec réseau (mode hors-ligne). L'inverse du cache-first
-// précédent, qui pouvait servir une version périmée même en étant en ligne.
 self.addEventListener('fetch', (event) => {
   // Ne jamais intercepter les écritures (POST vers /api/entries) — toujours
   // réseau, jamais de cache. La Cache API ne supporte de toute façon que GET.
   if (event.request.method !== 'GET') return;
 
+  const url = new URL(event.request.url);
+
+  // Les données (/api/entries) restent en network-first : la fraîcheur
+  // prime sur ces requêtes, et le mode hors-ligne est déjà géré par sync.js.
+  if (url.pathname.startsWith('/api/')) {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          const responseClone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseClone));
+          return response;
+        })
+        .catch(() => caches.match(event.request))
+    );
+    return;
+  }
+
+  // La coquille de l'app (HTML/CSS/JS) : stale-while-revalidate. On répond
+  // depuis le cache instantanément si possible (réactivité maximale au
+  // lancement), et on rafraîchit le cache en tâche de fond pour la prochaine
+  // visite — la mise à jour n'est jamais bloquante, juste "un lancement de
+  // retard".
   event.respondWith(
-    fetch(event.request)
-      .then((response) => {
-        const responseClone = response.clone();
-        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseClone));
-        return response;
-      })
-      .catch(() => caches.match(event.request))
+    caches.match(event.request).then((cached) => {
+      const networkUpdate = fetch(event.request)
+        .then((response) => {
+          const responseClone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseClone));
+          return response;
+        })
+        .catch(() => cached); // hors-ligne et rien en cache : tant pis
+
+      return cached ?? networkUpdate;
+    })
   );
 });
