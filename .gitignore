@@ -9,6 +9,10 @@ node_modules/
 .vscode/
 *.log
 
+# Paramètres agents IA (Claude Code) — restent strictement locaux
+.claude/
+CLAUDE.md
+
 # OS
 .DS_Store
 Thumbs.db
