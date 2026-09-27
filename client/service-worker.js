@@ -1,6 +1,6 @@
 // client/service-worker.js — cache les fichiers statiques pour le fonctionnement hors ligne.
 
-const CACHE_NAME = 'clopine-v10';
+const CACHE_NAME = 'clopine-v11';
 
 const ASSETS_TO_CACHE = [
   './',
@@ -12,6 +12,7 @@ const ASSETS_TO_CACHE = [
   './js/views/stats.js',
   './js/views/entryTable.js',
   './js/localDb.js',
+  './js/statsEngine.js',
   './js/remoteDb.js',
   './js/sync.js',
   './js/placeResolver.js',
