@@ -58,4 +58,47 @@ function computeStats(entries, now = new Date()) {
   };
 }
 
-export { computeStats, startOfSmokingDay, countEntriesBetween };
+/**
+ * Moyenne de cigarettes par jour (jour personnalisé 6h → 5h59) sur les `days`
+ * derniers jours COMPLETS — aujourd'hui (en cours) est exclu du calcul pour
+ * ne pas biaiser la moyenne vers le bas avec une journée partielle.
+ * @param {Entry[]} entries
+ * @param {number} days
+ * @param {Date} [now] - injectable pour faciliter les tests
+ * @returns {number}
+ */
+function averagePerDay(entries, days, now = new Date()) {
+  const todayStart = startOfSmokingDay(now);
+  const windowStart = new Date(todayStart.getTime() - days * ONE_DAY_MS);
+  const total = countEntriesBetween(entries, windowStart, todayStart);
+  return total / days;
+}
+
+/**
+ * Différence entre le nombre de cigarettes fumées aujourd'hui (depuis le
+ * début du jour personnalisé) et le nombre fumées hier au même point de la
+ * journée (même durée écoulée depuis 6h). Positif = plus qu'hier à cette
+ * heure-ci, négatif = moins.
+ * @param {Entry[]} entries
+ * @param {Date} [now] - injectable pour faciliter les tests
+ * @returns {number}
+ */
+function compareToYesterdaySameTime(entries, now = new Date()) {
+  const todayStart = startOfSmokingDay(now);
+  const elapsedMs = now.getTime() - todayStart.getTime();
+  const yesterdayStart = new Date(todayStart.getTime() - ONE_DAY_MS);
+  const yesterdaySameTime = new Date(yesterdayStart.getTime() + elapsedMs);
+
+  const todayCount = countEntriesBetween(entries, todayStart, now);
+  const yesterdayCount = countEntriesBetween(entries, yesterdayStart, yesterdaySameTime);
+
+  return todayCount - yesterdayCount;
+}
+
+export {
+  computeStats,
+  startOfSmokingDay,
+  countEntriesBetween,
+  averagePerDay,
+  compareToYesterdaySameTime,
+};
